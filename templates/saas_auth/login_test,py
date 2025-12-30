@@ -1,0 +1,26 @@
+"""SaaS Auth template - demonstrates core framework usage."""
+
+import pytest
+from core.driver import PlaywrightDriver
+from core.config import BASE_URL, DEMO_USERNAME, DEMO_PASSWORD
+
+@pytest.fixture(scope="session")
+def driver():
+    driver = PlaywrightDriver()
+    driver.start()
+    yield driver
+    driver.stop()
+
+def test_saas_login(driver):
+    """Test SaaS login flow with enterprise driver."""
+    page = driver.page
+    
+    # Navigate to login (already done by driver)
+    page.fill("[data-test='username']", DEMO_USERNAME)
+    page.fill("[data-test='password']", DEMO_PASSWORD)
+    page.click("[data-test='login-button']")
+    
+    # Assert successful login
+    assert page.url().startswith("https://www.saucedemo.com/inventory.html")
+    assert page.locator(".title").is_visible()
+    print("✅ SaaS login successful!")
